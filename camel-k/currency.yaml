@@ -1,0 +1,49 @@
+apiVersion: camel.apache.org/v1
+kind: Integration
+metadata:
+  name: currency-proxy
+    #  namespace: integration
+spec:
+  sources:
+    - name: CurrencyProxy.java
+      content: |
+        // Camel-K Route definition in Java DSL
+        from("platform-http:/api/currency?httpMethodRestrict=GET")
+          .setHeader("Content-Type", constant("text/xml; charset=utf-8"))
+          .setHeader("SOAPAction", constant("http://web.cbr.ru/GetCursOnDate"))
+          .setBody().simple("""
+              <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                <soap:Body>
+                  <GetCursOnDate xmlns="http://web.cbr.ru/">
+                    <On_date>${header.date}</On_date>
+                  </GetCursOnDate>
+                </soap:Body>
+              </soap:Envelope>
+            """)
+          .to("http://www.cbr.ru/DailyInfoWebServ/DailyInfo.asmx?bridgeEndpoint=true")
+          .unmarshal().jacksonxml()
+          .marshal().json()
+          .log("Response: ${body}")
+          .end();
+  traits:
+    ingress:
+        enabled: true              # Включаем трейт Ingress
+        host: currency.local       # Указываем хост для Ingress
+    service:
+        enabled: true              # Включаем создание сервиса
+    security-context:
+        enabled: false  # Отключение трейта security-context
+  dependencies:
+      - camel:direct
+      - camel:http
+      - camel:jackson
+      - camel:jacksonxml
+      - mvn:org.apache.camel.k:camel-k-runtime
+      - mvn:org.apache.camel.quarkus:camel-quarkus-java-joor-dsl
+      - mvn:org.apache.camel.quarkus:camel-quarkus-platform-http
+      - mvn:org.apache.camel.quarkus:camel-quarkus-rest
+
+#      - camel:platform-http
+#    - camel:soap
+#    - mvn:org.apache.camel.k:camel-k-loader-java:1.6.0
+

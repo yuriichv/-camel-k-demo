@@ -1,0 +1,19 @@
+apiVersion: camel.apache.org/v1
+kind: IntegrationPlatform
+metadata:
+  labels:
+    app: camel-k
+  name: camel-k
+  namespace: camel-k
+spec:
+  build:
+    registry:
+      address: docker-registry.registry.svc.cluster.local:5000 
+      #address: registry.linux.local:443
+      secret: registry-secret
+      insecure: true
+    maven:
+      properties:
+        jib.sendCredentialsOverHttp: "true"
+        sendCredentialsOverHttp: "true"
+        allowInsecureRegistries: "true"

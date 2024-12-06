@@ -1,0 +1,6 @@
+- from:
+    uri: "timer:tick?period=3000"
+    steps:
+      - setBody:
+          constant: "Hello world from Camel K"
+      - to: "log:info"

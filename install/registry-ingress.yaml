@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    meta.helm.sh/release-name: docker-registry
+    meta.helm.sh/release-namespace: registry
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+  labels:
+    app: docker-registry
+    app.kubernetes.io/managed-by: Helm
+    chart: docker-registry-2.2.3
+    heritage: Helm
+    release: docker-registry
+  name: docker-registry
+  namespace: registry
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: registry.linux.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: docker-registry
+            port:
+              number: 5000
+        path: /
+        pathType: Prefix

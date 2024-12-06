@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-custom # this is the name of the configmap you can overwrite with your changes
+  namespace: kube-system
+data:
+  #    custom.hosts: |
+  #      192.168.58.8 linux.local
+  #    linux.local.server: |
+  #      linux.local.            IN      A       192.168.58.8
+    linux.local.server: |
+      linux.local:53 {
+        hosts {
+          192.168.58.8 linux.local
+          fallthrough
+        }
+      }
