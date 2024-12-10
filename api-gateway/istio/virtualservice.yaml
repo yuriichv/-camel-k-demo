@@ -1,0 +1,26 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: echo-service
+  namespace: api-gw
+spec:
+  hosts:
+  - demo-gw.local
+  gateways:
+  - istio-ingress/istio-central-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /echo/v1
+    rewrite:
+      uri: /echo
+    headers:
+      request:
+        set:
+          Host: linux.local
+    route:
+    - destination:
+      #host: external-echo-service.api-gw.svc.cluster.local
+        host: linux.local
+        port:
+          number: 8080

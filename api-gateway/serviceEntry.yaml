@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1
+kind: ServiceEntry
+metadata:
+  name: echo-external-service
+  namespace: api-gw
+spec:
+  hosts:
+    - linux.local
+  ports:
+    - number: 8080
+      name: http
+      protocol: HTTP
+  location: MESH_EXTERNAL
+  resolution: DNS
